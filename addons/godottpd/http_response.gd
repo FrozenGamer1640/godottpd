@@ -68,7 +68,7 @@ func json(status_code: int, data) -> void:
 ## [br]
 ## [br][param field] - The name of the header. i.e. [code]Accept-Type[/code]
 ## [br][param value] - The value of this header. i.e. [code]application/json[/code]
-func set(field: StringName, value: Variant) -> void:
+func set_header_field(field: StringName, value: Variant) -> void:
 	headers[field] = value
 
 
@@ -108,6 +108,7 @@ func _match_status_code(code: int) -> String:
 		101: text="Switching protocols"
 		102: text="Processing"
 		103: text="Early Hints"
+
 		# 2xx - Successful Responses
 		200: text="OK"
 		201: text="Created"
@@ -119,6 +120,7 @@ func _match_status_code(code: int) -> String:
 		207: text="Multi-Status"
 		208: text="Already Reported"
 		226: text="IM Used"
+
 		# 3xx - Redirection Messages
 		300: text="Multiple Choices"
 		301: text="Moved Permanently"
@@ -129,6 +131,7 @@ func _match_status_code(code: int) -> String:
 		306: text="Switch Proxy"
 		307: text="Temporary Redirect"
 		308: text="Permanent Redirect"
+
 		# 4xx - Client Error Responses
 		400: text="Bad Request"
 		401: text="Unauthorized"
@@ -159,6 +162,7 @@ func _match_status_code(code: int) -> String:
 		429: text="Too Many Requests"
 		431: text="Request Header Fields Too Large"
 		451: text="Unavailable For Legal Reasons"
+
 		# 5xx - Server Error Responses
 		500: text="Internal Server Error"
 		501: text="Not Implemented"
