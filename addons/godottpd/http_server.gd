@@ -113,7 +113,7 @@ func _remove_disconnected_clients():
 
 
 ## Start the server
-func start():
+func start() -> int:
 	set_process(true)
 	self._server = TCPServer.new()
 	var err: int = self._server.listen(self.port, self.bind_address)
@@ -123,6 +123,7 @@ func start():
 			stop()
 		_:
 			_print_debug("HTTP Server listening on http://%s:%s" % [self.bind_address, self.port])
+	return err
 
 
 ## Stop the server and disconnect all clients
@@ -140,23 +141,34 @@ func stop():
 # #### Parameters
 # - client: The client that send the request
 # - request: The received request as a String
-func _handle_request(client: StreamPeer, request_string: String):
+func _handle_request(client: StreamPeer, request_string: String) -> void:
 	var request = HttpRequest.new()
+	var request_url: String
 	for line in request_string.split("\r\n"):
 		var method_matches = _method_regex.search(line)
 		var header_matches = _header_regex.search(line)
 		if method_matches:
 			request.method = method_matches.get_string("method")
-			var request_path: String = method_matches.get_string("path")
-			# Check if request_path contains "?" character, could be a query parameter
-			if not "?" in request_path:
-				request.path = request_path
-			else:
-				var path_query: PackedStringArray = request_path.split("?")
+			request_url = method_matches.get_string("path")
+			if "?" in request_url:
+				var path_query: PackedStringArray = request_url.split("?")
 				request.path = path_query[0]
 				request.query = _extract_query_params(path_query[1])
+			else:
+				request.path = request_url
+				request.query = {}
+
+			if "#" in request_url:
+				var path_fragment: PackedStringArray = request_url.split("#")
+				if path_fragment.size() > 1:
+					request.fragment = _extract_query_params(path_fragment[1])
+				else:
+					request.fragment = {}
+			else:
+				request.fragment = {}
+
 			request.headers = {}
-			request.body = ""
+			#request.body = "" # is this actually needed?
 		elif header_matches:
 			request.headers[header_matches.get_string("key")] = \
 			header_matches.get_string("value")
@@ -176,7 +188,6 @@ func _handle_request(client: StreamPeer, request_string: String):
 #   - headers: A dictionary of headers of the request
 #   - body: The raw body of the request
 func _perform_current_request(client: StreamPeer, request: HttpRequest):
-	_print_debug("HTTP Request: " + str(request))
 	var found = false
 	var is_allowed_origin = false
 	var response = HttpResponse.new()
@@ -300,8 +311,11 @@ func _extract_query_params(query_string: String) -> Dictionary:
 	for param in parameters:
 		if not "=" in param:
 			continue
-		var kv : Array = param.split("=")
+		var kv: Array = param.split("=")
 		var value: String = kv[1]
+		if value is String:
+			value = value.uri_decode()
+
 		if value.is_valid_int():
 			query[kv[0]] = value.to_int()
 		elif value.is_valid_float():

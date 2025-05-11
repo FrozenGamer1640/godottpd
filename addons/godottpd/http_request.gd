@@ -24,9 +24,15 @@ var parameters: Dictionary
 ## A dictionary of request query parameters
 var query: Dictionary
 
+## A dictionary of request fragment parameters
+var fragment: Dictionary
+
 ## Returns the body object based on the raw body and the content type of the request
 func get_body_parsed() -> Variant:
 	var content_type: String = ""
+
+	if(!body):
+		return null
 
 	if(headers.has("content-type")):
 		content_type = headers["content-type"]
@@ -39,7 +45,7 @@ func get_body_parsed() -> Variant:
 	if(content_type == "application/x-www-form-urlencoded"):
 		var data = {}
 
-		for body_part in  body.split("&"):
+		for body_part in body.split("&"):
 			var key_and_value = body_part.split("=")
 			data[key_and_value[0]] = key_and_value[1]
 
