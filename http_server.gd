@@ -39,9 +39,6 @@ var _method_regex: RegEx = RegEx.new()
 # A regex for header lines
 var _header_regex: RegEx = RegEx.new()
 
-# The base path used in a project to serve files
-var _local_base_path: String = "res://src"
-
 # list of host allowed to call the server
 var _allowed_origins: PackedStringArray = []
 
@@ -52,6 +49,7 @@ var _access_control_allowed_methods = "POST, GET, OPTIONS"
 var _access_control_allowed_headers = "content-type"
 
 # Compile the required regex
+@warning_ignore("shadowed_variable")
 func _init(_logging: bool = false):
 	self._logging = _logging
 	set_process(false)

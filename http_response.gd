@@ -14,7 +14,7 @@ var server_identifier: String = "GodotTPD"
 var headers: Dictionary = {}
 
 ## An array of cookies
-## [br] Cookies can be set using the `cookie(name, value, options)` function
+## [br] Cookies can be set using the `add_cookie(name, value, options)` function
 ## [br] Cookies will be automatically sent via "Set-Cookie" headers to clients
 var cookies: Array = []
 
@@ -78,7 +78,7 @@ func set_header_field(field: StringName, value: Variant) -> void:
 ## [br][param value] - The value of this cookie. i.e. [code]abcdef[/code]
 ## [br][param options] - A Dictionary of [url=https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#attributes]cookie attributes[/url]
 ## for this specific cokkie in the [code]{ "secure" : "true"}[/code] format.
-func cookie(name: String, value: String, options: Dictionary = {}) -> void:
+func add_cookie(name: String, value: String, options: Dictionary = {}) -> void:
 	var cookie: String = name+"="+value
 	if options.has("domain"): cookie+="; Domain="+options["domain"]
 	if options.has("max-age"): cookie+="; Max-Age="+options["max-age"]
